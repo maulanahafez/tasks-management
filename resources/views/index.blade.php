@@ -67,7 +67,7 @@
       </form>
     </div>
 
-    <div class="mt-8 rounded-md bg-white px-4 py-4">
+    <div class="mt-8 hidden rounded-md bg-white px-4 py-4">
       @if (session('successDestroy'))
         <div class="mb-4 bg-green-500/20 px-4 py-2 text-green-700">
           <p>{{ session('successDestroy') }}</p>
@@ -150,5 +150,79 @@
         </tbody>
       </table>
     </div>
+
+    <div class="mt-8 rounded-md bg-white px-4 py-4"
+      x-data="table"
+      x-init="getTasks()">
+      <input type="text"
+        x-model="search"
+        class="bg-red-200"
+        x-on:input.debounce.1000ms="searchResult()">
+      <table class="border-collapse divide-y divide-black">
+        <thead class="">
+          <tr class="rounded-lg text-sm font-semibold uppercase text-black/70">
+            <td class="py-2 px-2">#</td>
+            <td class="py-2 px-2"
+              x-on:click="console.log(tasks)">Judul</td>
+            <td class="py-2 px-2">Deskripsi</td>
+            <td class="py-2 px-2">Status</td>
+            <td class="px-2 py-2">Change Status</td>
+            <td class="py-2 px-2">Action</td>
+          </tr>
+        </thead>
+        <tbody>
+          <template x-for="task in tasks.tasks">
+            <tr :key="task.id">
+              <td x-text="task.id"
+                class="px-2 py-3 text-xs font-semibold"></td>
+              <td x-text="task.judul"
+                class="px-2 py-3"></td>
+              <td x-text="task.deskripsi"
+                class="w-1/2 px-2 py-3"></td>
+              <td x-text="task.status"
+                class="px-2 py-3 capitalize"></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+
+    <script>
+      function table() {
+        return {
+          tasks: [],
+          search: '',
+          searchResult() {
+            console.log(this.tasks)
+            this.tasks = this.tasks.filter(task => task.judul.toLowerCase().includes(this.search.toLowerCase()))
+          },
+          getTasks() {
+            fetch('http://127.0.0.1:8000/api/test')
+              .then((response) => response.json())
+              .then((json) => this.tasks = json)
+          }
+        }
+      }
+      // document.addEventListener('alpine:init', () => {
+      //   Alpine.data('table', () => ({
+      //     init() {
+      //       this.getTasks()
+      //     },
+      //     tasks: [],
+      //     search: '',
+      //     searchResult() {
+      //       console.log(this.search)
+      //       this.tasks = this.tasks.filter(task => task.judul.toLowerCase().includes(this.search.toLowerCase()))
+      //     },
+      //     getTasks() {
+      //       fetch('http://127.0.0.1:8000/api/test')
+      //         .then((response) => response.json())
+      //         .then((json) => this.tasks = json)
+      //     }
+      //   }))
+      // })
+    </script>
   </div>
 </x-layout>
